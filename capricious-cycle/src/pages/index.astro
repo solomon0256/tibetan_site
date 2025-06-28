@@ -1,11 +1,19 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import { getCourses } from "../lib/notion.js";
+const courses = await getCourses();
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<html>
+  <head><title>课程列表</title></head>
+  <body>
+    <h1>课程列表</h1>
+    <ul>
+      {courses.map(course => (
+        <li>
+          <a href={`/courses/${course.slug}`}>{course.title}</a>
+          <span>类别：{course.category} 价格：￥{course.price}</span>
+        </li>
+      ))}
+    </ul>
+  </body>
+</html>
