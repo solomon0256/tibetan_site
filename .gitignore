@@ -1,0 +1,5 @@
+
+capricious-cycle/node_modules/
+capricious-cycle/dist/
+*.log
+.env
