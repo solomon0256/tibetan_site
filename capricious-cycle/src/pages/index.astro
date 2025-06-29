@@ -1,5 +1,7 @@
 ---
 import { getCourses } from '../lib/notion.js';
+// Trigger a test error for Sentry
+throw new Error('Sentry 测试');
 const courses = await getCourses();
 ---
 
