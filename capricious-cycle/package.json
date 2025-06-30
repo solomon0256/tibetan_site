@@ -7,8 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "start": "astro start",
-    "postinstall": "cp -R node_modules/h5p-standalone/dist public/h5p-standalone"
+    "start": "astro start"
   },
   "dependencies": {
     "@notionhq/client": "^3.1.3",
