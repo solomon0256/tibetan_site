@@ -1,13 +1,13 @@
 ---
 import { getCourses } from '../lib/notion.js';
-
 const courses = await getCourses();
 ---
-
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <title>课程列表</title>
+    <!-- H5P 样式 -->
+    <link is:inline rel="stylesheet" href="/h5p-standalone/styles/h5p.css" />
   </head>
   <body>
     <h1>课程列表</h1>
@@ -19,5 +19,17 @@ const courses = await getCourses();
         </li>
       ))}
     </ul>
+    <hr />
+    <h2>互动测验</h2>
+    <div id="h5p-container"></div>
+    <script is:inline src="/h5p-standalone/main.bundle.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        H5PStandalone('#h5p-container', {
+          h5pJsonUrl: '/h5p/arithmetic-quiz-22-57860/content/content.json',
+          resize: true
+        });
+      });
+    </script>
   </body>
 </html>
