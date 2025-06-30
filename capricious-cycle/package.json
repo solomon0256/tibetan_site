@@ -21,7 +21,6 @@
     "@astrojs/cloudflare": "^12.6.0",
     "@astrojs/tailwind": "^6.0.2",
     "autoprefixer": "^10.4.21",
-    "h5p-cli": "^1.1.4",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17"
   }
