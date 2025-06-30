@@ -11,7 +11,8 @@ const { data: sessionData, error: sessionError } = await supabase.auth.getSessio
     <meta charset="utf-8" />
     <title>课程列表</title>
     <script type="module" is:inline>
-      import('/src/lib/sentry.client.js');
+      import * as Sentry from '/src/lib/sentry.client.js';
+      Sentry.captureMessage('Sentry 客户端初始化完成');
     </script>
   </head>
   <body>
