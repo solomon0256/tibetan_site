@@ -8,4 +8,9 @@ export default defineConfig({
   integrations: [
     tailwind(),
   ],
+  vite: {
+    build: {
+      sourcemap: true
+    }
+  }
 });
