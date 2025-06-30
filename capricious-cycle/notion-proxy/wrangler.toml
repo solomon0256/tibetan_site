@@ -1,0 +1,9 @@
+# notion-proxy/wrangler.toml
+name = "notion-proxy"
+main = "src/index.ts"
+compatibility_date = "2025-06-30"
+account_id = "eb1db298c33986d6fc5e853af1aeb07f"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+NOTION_API_TOKEN = "uJEi6pwAaw-Cxqe3CyLEiX_HMbXIv-DNw5-IzIIm"

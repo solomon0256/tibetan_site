@@ -1,3 +1,5 @@
+# ⚠️ 注意：此 wrangler.toml 由 Terraform 管理生成。请勿手动编辑，除非明确了解变更目的。
+# 若需更改配置，请修改 infra/terraform 中的 Terraform 配置，并重新执行 `terraform apply`。
 name = "tibetan-site"
 compatibility_date = "2025-06-30"
 main = "src/worker.ts"
