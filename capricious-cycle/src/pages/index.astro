@@ -1,6 +1,10 @@
 ---
 import { getCourses } from '../lib/notion.js';
+import { supabase } from '../lib/supabase.js';
+
 const courses = await getCourses();
+
+const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 ---
 <html lang="zh-CN">
   <head>
@@ -18,6 +22,14 @@ const courses = await getCourses();
           </li>
         ))}
       </ul>
+    </div>
+    <div class="mt-10 p-4 bg-yellow-100 border border-yellow-300 rounded">
+      <h2 class="font-semibold text-lg mb-2">[Supabase 连接测试]</h2>
+      {sessionError ? (
+        <p class="text-red-600">出错了：{sessionError.message}</p>
+      ) : (
+        <p class="text-green-700">当前用户：{sessionData.session?.user?.email ?? '未登录'}</p>
+      )}
     </div>
   </body>
 </html>
