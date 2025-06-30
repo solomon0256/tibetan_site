@@ -1,0 +1,22 @@
+name = "tibetan-site"
+compatibility_date = "2025-06-30"
+
+[[r2_buckets]]
+binding = "R2_COURSE"
+bucket_name = "tibetan-site-r2"
+preview_bucket_name = "tibetan-site-r2"
+
+[[kv_namespaces]]
+binding = "TIBETAN_KV"
+id = "88e727ace5f0497ba04645e247733627"
+preview_id = "88e727ace5f0497ba04645e247733627"
+
+[[d1_databases]]
+binding = "LRS_DB"
+database_name = "tibetan-lrs-db"
+database_id = "cfd366ac-3eb7-48cc-86e4-bb4f5d58f221"
+
+# 队列已取消使用，以下段落可删
+# [[queues.producers]]
+# binding = "EVENT_QUEUE"
+# queue = "tibetan-event-queue"

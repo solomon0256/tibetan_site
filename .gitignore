@@ -1,5 +1,10 @@
-
 capricious-cycle/node_modules/
 capricious-cycle/dist/
 *.log
 .env
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
