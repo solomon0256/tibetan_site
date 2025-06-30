@@ -1,15 +1,16 @@
 name = "tibetan-site"
 compatibility_date = "2025-06-30"
+main = "src/worker.ts"
+account_id = "eb1db298c33986d6fc5e853af1aeb07f"
+compatibility_flags = ["nodejs_compat"]
 
 [[r2_buckets]]
 binding = "R2_COURSE"
 bucket_name = "tibetan-site-r2"
-preview_bucket_name = "tibetan-site-r2"
 
 [[kv_namespaces]]
 binding = "TIBETAN_KV"
 id = "88e727ace5f0497ba04645e247733627"
-preview_id = "88e727ace5f0497ba04645e247733627"
 
 [[d1_databases]]
 binding = "LRS_DB"
@@ -20,3 +21,12 @@ database_id = "cfd366ac-3eb7-48cc-86e4-bb4f5d58f221"
 # [[queues.producers]]
 # binding = "EVENT_QUEUE"
 # queue = "tibetan-event-queue"
+
+[vars]
+SUPABASE_URL = "https://esoalrbibpvjbivieapr.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVzb2FscmJpYnB2amJpdmllYXByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMjY4NzQsImV4cCI6MjA2NjcwMjg3NH0.BdSou0OafQuK2tZQW_mlEPGBWAO_d5Cm_APSWh_ks2A"
+NOTION_API_KEY = "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"
+NOTION_DATABASE_ID = "22099e081453800c82bfe3a22859fe8a"
+KV_NAMESPACE_ID = "88e727ace5f0497ba04645e247733627"
+R2_BUCKET_NAME = "tibetan-site-r2"
+D1_DATABASE_ID = "cfd366ac-3eb7-48cc-86e4-bb4f5d58f221"
