@@ -8,14 +8,16 @@ const courses = await getCourses();
     <title>课程列表</title>
   </head>
   <body>
-    <h1>课程列表</h1>
-    <ul>
-      {courses.map((course) => (
-        <li key={course.id}>
-          <strong>{course.title}</strong><br />
-          类别：{course.category}  |  价格：¥{course.price}
-        </li>
-      ))}
-    </ul>
+    <div class="min-h-screen bg-gray-50 text-gray-800 p-8">
+      <h1 class="text-3xl font-bold mb-6">课程列表</h1>
+      <ul class="space-y-4">
+        {courses.map((course) => (
+          <li key={course.id} class="bg-white shadow rounded-lg p-4">
+            <strong>{course.title}</strong><br />
+            类别：{course.category}  |  价格：¥{course.price}
+          </li>
+        ))}
+      </ul>
+    </div>
   </body>
 </html>
