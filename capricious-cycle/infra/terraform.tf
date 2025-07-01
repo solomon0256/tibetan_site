@@ -1,5 +1,3 @@
-
-
 terraform {
   required_providers {
     cloudflare = {
@@ -21,4 +19,11 @@ resource "cloudflare_r2_bucket" "course_assets" {
 resource "cloudflare_workers_kv_namespace" "kv_cache" {
   title      = "TIBETAN_KV_CACHE"
   account_id = var.cloudflare_account_id
+}
+
+resource "cloudflare_worker_script" "tibetan_worker" {
+  name       = "tibetan-site"
+  account_id = var.cloudflare_account_id
+  module     = true
+  content    = file("${path.module}/../dist/worker.mjs")
 }
