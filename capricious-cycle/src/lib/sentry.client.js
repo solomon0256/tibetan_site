@@ -3,8 +3,13 @@ import * as Sentry from '@sentry/browser';
 if (import.meta.env.PUBLIC_ASTRO_SENTRY_DSN) {
   Sentry.init({
     dsn: import.meta.env.PUBLIC_ASTRO_SENTRY_DSN,
-    environment: import.meta.env.PUBLIC_ASTRO_NODE_ENV,
+    environment: import.meta.env.MODE,
+    release: 'capricious-site@' + import.meta.env.BUILD_ID,
     tracesSampleRate: 0.1,
+  });
+
+  Sentry.setUser({
+    email: 'wenyuhe03@gmial.com',
   });
 
   // 自动捕捉全局错误
