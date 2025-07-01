@@ -1,9 +1,10 @@
+
 # ⚠️ 注意：此 wrangler.toml 由 Terraform 管理生成。请勿手动编辑，除非明确了解变更目的。
 # 若需更改配置，请修改 infra/terraform 中的 Terraform 配置，并重新执行 `terraform apply`。
 # 新增 Durable Object 绑定用于进度同步功能（ProgressDO）
 name = "tibetan-site"
 compatibility_date = "2025-06-30"
-main = "src/worker.ts"
+main = "src/workers.ts"
 account_id = "eb1db298c33986d6fc5e853af1aeb07f"
 compatibility_flags = ["nodejs_compat"]
 
@@ -34,6 +35,13 @@ KV_NAMESPACE_ID = "88e727ace5f0497ba04645e247733627"
 R2_BUCKET_NAME = "tibetan-site-r2"
 D1_DATABASE_ID = "cfd366ac-3eb7-48cc-86e4-bb4f5d58f221"
 
-[[durable_objects]]
-binding = "PROGRESS_DO"
-class_name = "ProgressDO"
+
+# Durable Object 绑定用于进度同步（ProgressDO），请确保 migration 与 class 保持一致。
+[durable_objects]
+bindings = [
+  { name = "PROGRESS_DO", class_name = "ProgressDO" }
+]
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ProgressDO"]
