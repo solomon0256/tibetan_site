@@ -10,6 +10,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm ci
+      - name: Install dependencies (root)
+        run: npm install
+      - name: Install dependencies (project)
+        run: npm ci
         working-directory: capricious-cycle
-      - run: npm run build --workspace=capricious-cycle
+      - name: Validate JSON Schema
+        run: npm run validate:schema
+        working-directory: capricious-cycle
+      - name: Build Project
+        run: npm run build
+        working-directory: capricious-cycle
