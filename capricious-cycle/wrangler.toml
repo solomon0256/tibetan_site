@@ -45,3 +45,7 @@ bindings = [
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["ProgressDO"]
+
+[[migrations]]
+tag = "v2"
+new_classes = []

@@ -25,12 +25,12 @@ xapiRoute.post('/statement', async (c) => {
   const id = uuidv4();
   const timestamp = new Date().toISOString();
 
-  await c.env.LRS_DB.prepare(`
-    INSERT INTO xapi_statements (id, actor, verb, object, result, timestamp, session_id)
+  const stmtInsert = c.env.LRS_DB.prepare(`
+    INSERT INTO statements (id, actor, verb, object, result, timestamp, session_id)
     VALUES (?, ?, ?, ?, ?, ?, ?)
-  `)
-    .bind(id, stmt.actor, stmt.verb, stmt.object, JSON.stringify(stmt.result ?? null), timestamp, stmt.session_id ?? null)
-    .run();
+  `).bind(id, stmt.actor, stmt.verb, stmt.object, JSON.stringify(stmt.result ?? null), timestamp, stmt.session_id ?? null);
+
+  const insertResult = await stmtInsert.run();
 
   return c.json({ status: 'ok', id });
 });
@@ -39,7 +39,7 @@ xapiRoute.post('/statement', async (c) => {
 xapiRoute.get('/statement', async (c) => {
   const { actor, session_id } = c.req.query();
 
-  let query = 'SELECT * FROM xapi_statements';
+  let query = 'SELECT * FROM statements';
   const conditions: string[] = [];
   const bindings: string[] = [];
 
@@ -56,7 +56,7 @@ xapiRoute.get('/statement', async (c) => {
     query += ' WHERE ' + conditions.join(' AND ');
   }
 
-  const { results } = await c.env.LRS_DB.prepare(query).bind(...bindings).all();
-
+  const stmtQuery = c.env.LRS_DB.prepare(query).bind(...bindings);
+  const { results } = await stmtQuery.all();
   return c.json({ statements: results });
 });
