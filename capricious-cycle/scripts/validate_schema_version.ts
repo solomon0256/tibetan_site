@@ -1,13 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SCHEMAS_DIR = path.resolve(__dirname, '../schemas');
 const VERSION_FILE = path.join(SCHEMAS_DIR, 'schema_version.json');
 
-const ajv = new Ajv({ allErrors: true });
+const ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(ajv);
 
 function loadJson(filePath: string): any {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
