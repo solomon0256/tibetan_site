@@ -11,8 +11,55 @@ const { data: sessionData, error: sessionError } = await supabase.auth.getSessio
     <meta charset="utf-8" />
     <title>课程列表</title>
     <script type="module" is:inline>
-      import * as Sentry from '/src/lib/sentry.client.js';
-      Sentry.captureMessage('Sentry 客户端初始化完成');
+      (async () => {
+        // xAPI 测试代码
+        const {
+          submitXAPIStatement: submitStatement,
+          fetchXAPIStatements: getStatements
+        } = await import('/src/lib/api/xapi.client.ts');
+
+        const testStatement = {
+          actor: {
+            name: 'test-user',
+            mbox: 'mailto:test-user@example.com',
+            objectType: 'Agent'
+          },
+          verb: {
+            id: 'http://adlnet.gov/expapi/verbs/viewed',
+            display: { 'en-US': 'viewed' }
+          },
+          object: {
+            id: 'http://example.com/course_home',
+            objectType: 'Activity',
+            definition: {
+              name: { 'en-US': 'Course Home' },
+              description: { 'en-US': 'The course home page' }
+            }
+          },
+          result: {
+            score: { raw: 100 },
+            success: true
+          },
+          timestamp: new Date().toISOString()
+        };
+
+        console.log('提交前内容', testStatement);
+
+        if (!testStatement.actor || !testStatement.verb || !testStatement.object) {
+          console.error('[xAPI] 语句缺少必要字段');
+          return;
+        }
+
+        try {
+          await submitStatement(testStatement);
+          console.log('[xAPI] 提交成功');
+
+          const res = await getStatements('test-user');
+          console.log('[xAPI] 查询结果：', res);
+        } catch (err) {
+          console.error('[xAPI] 错误：', err);
+        }
+      })();
     </script>
   </head>
   <body>
@@ -20,7 +67,7 @@ const { data: sessionData, error: sessionError } = await supabase.auth.getSessio
       <h1 class="text-3xl font-bold mb-6">课程列表</h1>
       <ul class="space-y-4">
         {courses.map((course) => (
-          <li key={course.id} class="bg-white shadow rounded-lg p-4">
+          <li class="bg-white shadow rounded-lg p-4">
             <strong>{course.title}</strong><br />
             类别：{course.category}  |  价格：¥{course.price}
           </li>
@@ -34,12 +81,6 @@ const { data: sessionData, error: sessionError } = await supabase.auth.getSessio
       ) : (
         <p class="text-green-700">当前用户：{sessionData.session?.user?.email ?? '未登录'}</p>
       )}
-    </div>
-    <div class="mt-10 p-4 bg-red-100 border border-red-300 rounded">
-      <h2 class="font-semibold text-lg mb-2">[Sentry 客户端错误测试]</h2>
-      <button onclick="throw new TypeError('这是一个测试 TypeError 错误')" class="px-4 py-2 bg-red-600 text-white rounded">
-        触发 TypeError
-      </button>
     </div>
   </body>
 </html>

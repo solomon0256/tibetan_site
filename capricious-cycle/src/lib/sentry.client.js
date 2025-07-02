@@ -25,3 +25,4 @@ if (import.meta.env.PUBLIC_ASTRO_SENTRY_DSN) {
     console.log('[Sentry] Initialized');
   }
 }
+export { Sentry };

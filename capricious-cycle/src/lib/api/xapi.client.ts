@@ -1,7 +1,7 @@
 import type { XAPIStatement } from '../../types/xapi';
 
 export async function submitXAPIStatement(statement: XAPIStatement): Promise<{ status: string; id: string }> {
-  const res = await fetch('/statement', {
+  const res = await fetch('/api/statement', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ export async function fetchXAPIStatements(params?: { actor?: string; session_id?
   if (params?.actor) searchParams.append('actor', params.actor);
   if (params?.session_id) searchParams.append('session_id', params.session_id);
 
-  const url = `/statement${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+  const url = `/api/statement${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
 
   const res = await fetch(url);
   if (!res.ok) {

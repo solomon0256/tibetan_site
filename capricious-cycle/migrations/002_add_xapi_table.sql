@@ -1,5 +1,4 @@
 
-
 CREATE TABLE IF NOT EXISTS xapi_statements (
   id TEXT PRIMARY KEY,
   actor TEXT NOT NULL,
