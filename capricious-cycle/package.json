@@ -24,6 +24,7 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@astrojs/cloudflare": "^12.6.0",
     "@astrojs/tailwind": "^6.0.2",
     "@cloudflare/workers-types": "^4.20250701.0",
     "@sentry/vite-plugin": "^3.5.0",
