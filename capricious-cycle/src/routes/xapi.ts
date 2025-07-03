@@ -1,3 +1,5 @@
+/*
+
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
@@ -60,3 +62,4 @@ xapiRoute.get('/statement', async (c) => {
   const { results } = await stmtQuery.all();
   return c.json({ statements: results });
 });
+*/
