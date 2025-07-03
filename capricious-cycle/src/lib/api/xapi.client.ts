@@ -1,3 +1,5 @@
+// File: capricious-cycle/src/lib/api/xapi.client.ts
+
 import type { XAPIStatement } from '../../types/xapi';
 
 export async function submitXAPIStatement(statement: XAPIStatement): Promise<{ status: string; id: string }> {

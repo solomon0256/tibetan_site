@@ -1,3 +1,4 @@
+// File: src/lib/notion.js
 import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: import.meta.env.ASTRO_NOTION_TOKEN });
