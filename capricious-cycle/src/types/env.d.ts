@@ -1,6 +1,7 @@
 // src/types/env.d.ts
 import type { ExecutionContext } from "@cloudflare/workers-types";
-
+// 在任何使用到 env 的文件（如 statement.ts）顶部加：
+import type { Env } from '@/types/env';  // 或相对路径 ./types/env
 export interface Env {
   PROGRESS_DO: DurableObjectNamespace;
 
@@ -19,4 +20,10 @@ export interface Env {
   // MY_KV: KVNamespace;
   // R2_BUCKET: R2Bucket;
   // NOTION_TOKEN: string;
+}
+
+declare module "astro" {
+  interface Locals {
+    env: Env;
+  }
 }

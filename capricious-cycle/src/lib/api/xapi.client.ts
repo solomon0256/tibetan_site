@@ -1,19 +1,33 @@
 import type { XAPIStatement } from '../../types/xapi';
 
 export async function submitXAPIStatement(statement: XAPIStatement): Promise<{ status: string; id: string }> {
-  const res = await fetch('/api/statement', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(statement),
-  });
+  try {
+    // 检查必要字段是否存在
+    if (!statement.actor || !statement.verb || !statement.object) {
+      throw new Error('Missing required xAPI fields: actor, verb, object');
+    }
 
-  if (!res.ok) {
-    throw new Error(`Failed to submit xAPI statement: ${res.statusText}`);
+    console.debug('[xAPI] 正在提交语句：', statement);
+
+    const res = await fetch('/api/statement', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(statement),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`[xAPI] 提交失败：${res.status} ${res.statusText}`, errorText);
+      throw new Error(`Failed to submit xAPI statement: ${res.statusText}`);
+    }
+
+    return res.json();
+  } catch (error: any) {
+    console.error('[xAPI] 错误：', error.message || error);
+    throw error;
   }
-
-  return res.json();
 }
 
 export async function fetchXAPIStatements(params?: { actor?: string; session_id?: string }): Promise<any> {

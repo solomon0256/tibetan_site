@@ -1,35 +1,83 @@
+/// <reference path="../../types/env.d.ts" />
+/**
+ * [说明]
+ * 为兼容 Cloudflare 平台运行和本地 Astro Dev 运行环境，
+ * 我们采用 DEV 环境下使用 mock database（避免 LRS_DB 未定义导致崩溃），
+ * 仅在部署或使用 wrangler dev 时才使用真实 Cloudflare D1 注入。
+ * 本文件为主要的数据入口 /api/statement.ts，不再使用 /xapi.ts。
+ */
 // src/pages/api/statement.ts
 export const prerender = false;
 import type { APIRoute } from 'astro';
+import type { Env } from '@/types/env';
+import { randomUUID } from 'node:crypto';
 
-// GET 方法用于提供模拟数据响应，便于前端测试接口是否联通。
-export const GET: APIRoute = async ({ request }) => {
-  return new Response(
-    JSON.stringify([
-      {
-        id: 'test-1',
-        verb: { id: 'http://adlnet.gov/expapi/verbs/viewed', display: { 'en-US': 'viewed' } },
-        actor: { name: 'test-user', mbox: 'mailto:test-user@example.com', objectType: 'Agent' },
-        object: {
-          id: 'http://example.com/course_home',
-          objectType: 'Activity',
-          definition: { name: { 'en-US': 'Course Home' } },
-        },
-        result: { success: true, score: { raw: 100 } },
-        timestamp: new Date().toISOString(),
-      },
-    ]),
-    {
-      status: 200,
-      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+export const GET: APIRoute = async ({ request, locals }) => {
+  try {
+    const isDev = import.meta.env.DEV;
+    const db = isDev
+      ? {
+          prepare: () => ({
+            bind: () => ({
+              all: async () => ({ results: [] }),
+              run: async () => {},
+            }),
+          }),
+        }
+      : (locals as { env: Env }).env.LRS_DB;
+    const url = new URL(request.url);
+    const actor = url.searchParams.get('actor');
+    const session_id = url.searchParams.get('session_id');
+
+    let query = 'SELECT * FROM statements';
+    const conditions: string[] = [];
+    const bindings: any[] = [];
+
+    if (actor) {
+      conditions.push('actor = ?');
+      bindings.push(actor);
     }
-  );
+
+    if (session_id) {
+      conditions.push('session_id = ?');
+      bindings.push(session_id);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    query += ' ORDER BY timestamp DESC';
+
+    const stmt = db.prepare(query).bind(...bindings);
+    const { results } = await stmt.all();
+
+    return new Response(
+      JSON.stringify({ statements: results }),
+      { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
+    );
+  } catch (error) {
+    console.error('[xAPI] Failed to query statements:', error);
+    return new Response(
+      JSON.stringify({ error: 'Failed to query statements' }),
+      { status: 500, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
+    );
+  }
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    console.log('[xAPI] Received headers:', [...request.headers.entries()]);
-
+    const isDev = import.meta.env.DEV;
+    const db = isDev
+      ? {
+          prepare: () => ({
+            bind: () => ({
+              all: async () => ({ results: [] }),
+              run: async () => {},
+            }),
+          }),
+        }
+      : (locals as { env: Env }).env.LRS_DB;
     const contentType = request.headers.get('content-type') || '';
     if (!contentType.toLowerCase().startsWith('application/json')) {
       return new Response(
@@ -39,7 +87,6 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const body: any = await request.json();
-    console.log('[xAPI] 收到提交请求：', body);
 
     if (!body.actor || !body.verb || !body.object) {
       return new Response(
@@ -48,15 +95,35 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    const id = randomUUID();
+    const timestamp = new Date().toISOString();
+    const session_id = body.session_id ?? null;
+    const result = body.result ?? null;
+
+    const stmt = db.prepare(`
+      INSERT INTO statements (id, actor, verb, object, result, timestamp, session_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      id,
+      body.actor,
+      body.verb,
+      body.object,
+      JSON.stringify(result),
+      timestamp,
+      session_id
+    );
+
+    await stmt.run();
+
     return new Response(
-      JSON.stringify({ message: 'xAPI statement received' }),
-      { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
+      JSON.stringify({ status: 'ok', id }),
+      { status: 201, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
     );
   } catch (error) {
-    console.error('[xAPI] JSON parse failed or invalid schema:', error);
+    console.error('[xAPI] Failed to insert statement:', error);
     return new Response(
-      JSON.stringify({ error: 'Invalid request' }),
-      { status: 400, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
+      JSON.stringify({ error: 'Failed to insert statement' }),
+      { status: 500, headers: { 'Content-Type': 'application/json; charset=utf-8' } }
     );
   }
 };
