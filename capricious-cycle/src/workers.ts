@@ -1,3 +1,4 @@
+/*
 interface Env {
   PROGRESS_DO: DurableObjectNamespace;
   TIBETAN_KV: KVNamespace;
@@ -23,3 +24,4 @@ const app = new Hono<{ Bindings: Env }>();
 app.route("/", xapiRoute);
 
 export default app;
+*/
