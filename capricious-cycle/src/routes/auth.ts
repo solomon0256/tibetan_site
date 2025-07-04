@@ -6,9 +6,9 @@ import { verifySupabaseJWT, generateNewJWT } from '../lib/auth-utils';
 const router = Router();
 
 // 刷新 JWT
-router.post('/api/v1/auth/refresh', async (request: any) => {
+router.post('/api/v1/auth/refresh', async (request: any, env: any) => {
   const { refreshToken } = await request.json()
-  const newToken = await generateNewJWT(refreshToken)
+  const newToken = await generateNewJWT(refreshToken, env)
   return new Response(JSON.stringify({ token: newToken }), { status: 200 })
 })
 
