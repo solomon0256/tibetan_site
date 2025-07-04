@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "es2020",
+    "target": "es2020",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node"
+  },
+  "include": [
+  "src/workers.ts",
+  "src/routes/**/*.ts",
+  "src/lib/auth-utils.ts"
+  ],
+  "exclude": ["node_modules"]
+}

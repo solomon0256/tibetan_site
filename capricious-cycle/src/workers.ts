@@ -1,27 +1,18 @@
-/*
-interface Env {
-  PROGRESS_DO: DurableObjectNamespace;
-  TIBETAN_KV: KVNamespace;
-  LRS_DB: D1Database;
-  R2_COURSE: R2Bucket;
-  SUPABASE_URL: string;
-  SUPABASE_ANON_KEY: string;
-  NOTION_API_KEY: string;
-  NOTION_DATABASE_ID: string;
-  KV_NAMESPACE_ID: string;
-  R2_BUCKET_NAME: string;
-  D1_DATABASE_ID: string;
-}
+import authRouter from './routes/auth';
 
-import { ProgressDO } from "./objects/ProgressDO";
-import { Hono } from "hono";
-import { xapiRoute } from "./routes/xapi";
-
-export { ProgressDO };
-
-const app = new Hono<{ Bindings: Env }>();
-
-app.route("/", xapiRoute);
-
-export default app;
-*/
+addEventListener('fetch', (e: FetchEvent) => {
+  const url = new URL(e.request.url);
+  // Stub /api/v1/auth/refresh
+  if (e.request.method === 'POST' && url.pathname === '/api/v1/auth/refresh') {
+    return e.respondWith(new Response(JSON.stringify({ token: 'eyJ.fake.token' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }));
+  }
+  // Stub /api/v1/auth/logout
+  if (e.request.method === 'POST' && url.pathname === '/api/v1/auth/logout') {
+    return e.respondWith(new Response(null, { status: 204 }));
+  }
+  // Fallback to router for other paths
+  return e.respondWith(authRouter.handle(e.request) ?? new Response('Not Found', { status: 404 }));
+});

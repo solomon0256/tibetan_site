@@ -35,17 +35,6 @@ KV_NAMESPACE_ID = "88e727ace5f0497ba04645e247733627"
 R2_BUCKET_NAME = "tibetan-site-r2"
 D1_DATABASE_ID = "cfd366ac-3eb7-48cc-86e4-bb4f5d58f221"
 
-
-# Durable Object 绑定用于进度同步（ProgressDO），请确保 migration 与 class 保持一致。
-[durable_objects]
-bindings = [
-  { name = "PROGRESS_DO", class_name = "ProgressDO" }
-]
-
-[[migrations]]
-tag = "v1"
-new_sqlite_classes = ["ProgressDO"]
-
 [[migrations]]
 tag = "v2"
 new_classes = []
