@@ -1,3 +1,4 @@
+// File: capricious-cycle/src/lib/auth-utils.ts
 import { createClient } from '@supabase/supabase-js';
 
 // Helper to create Supabase Admin client per request env

@@ -1,0 +1,92 @@
+
+
+
+## 🧱 模块名称：Notion 数据访问模块
+
+### 📌 功能定位
+
+该模块负责从 Notion 数据库中拉取课程内容信息，当前用途为网站课程展示。包括以下子系统：
+
+1. `src/lib/notion.js`: 前端直连 Notion 数据接口，基于 `@notionhq/client`。
+2. `notion-proxy`: Cloudflare Worker 代理 Notion API，绕过 CORS 限制（暂未使用）。
+3. 数据来源：Notion 中的课程数据库，字段包括 title、slug、category、price、updatedAt。
+
+---
+
+### 🧰 当前架构 & 数据流
+
+```
+用户请求页面
+   │
+   ├─▶ 前端页面组件调用 getCourses()
+   │
+   └─▶ lib/notion.js 中的 getCourses()
+           └─▶ @notionhq/client.query() 直接调用 Notion API
+```
+
+（当前未使用 notion-proxy）
+
+---
+
+### 🔩 核心依赖
+
+- `@notionhq/client`: 官方 SDK，用于访问 Notion API。
+- `ASTRO_NOTION_TOKEN`: Notion API Token，环境变量。
+- `ASTRO_NOTION_DATABASE_ID`: 数据库 ID，环境变量。
+- `notion-proxy`: Cloudflare Worker，用于绕过浏览器的 CORS 限制（备用）。
+
+---
+
+### 📁 环境变量依赖（共 2 项）
+
+| 变量名                    | 用途                  | 来源                      |
+|--------------------------|-----------------------|---------------------------|
+| `ASTRO_NOTION_TOKEN`     | Notion 授权           | `.env` 本地注入           |
+| `ASTRO_NOTION_DATABASE_ID` | 数据库 ID            | `.env` 本地注入           |
+
+> 🧪 Worker Proxy 的 token 位于 `wrangler.toml > [vars]` 下的 `NOTION_API_TOKEN`，与前端无关。
+
+---
+
+### ✅ 当前字段映射（课程数据）
+
+| Notion Property | 用途        | 访问字段路径                          |
+|-----------------|-------------|---------------------------------------|
+| `title`         | 标题        | `page.properties.title.title[0].plain_text` |
+| `slug`          | 页面路径名  | `page.properties.slug.rich_text[0].plain_text` |
+| `category`      | 分类        | `page.properties.category.rich_text[0].plain_text` |
+| `price`         | 价格        | `page.properties.price.number` |
+| `updatedAt`     | 更新时间    | `page.properties.updatedAt.date.start` |
+
+---
+
+### ⚠️ 主要问题与开发建议
+
+#### ✅ 问题 1：Proxy 没启用，直接暴露 Token 风险极高
+- 当前架构中，`@notionhq/client` 在前端运行，Token 可能被打包泄漏。
+- **建议启用 `notion-proxy`，改用后端 Worker 转发请求。**
+
+#### ✅ 问题 2：字段结构硬编码，缺乏容错
+- `.title?.title[0]?.plain_text` 等字段路径写死，字段缺失时返回空字符串。
+- 建议抽离字段解析函数，并对字段缺失做结构校验。
+
+#### ✅ 问题 3：未统一 Notion 数据 Schema
+- 当前课程数据结构由代码逻辑自行解构，未与 JSON Schema 校验机制挂钩。
+- 建议补充 `course-notion.schema.json`，用于开发期间校验结构一致性。
+
+#### ✅ 问题 4：Proxy Worker Token 硬编码
+- `notion-proxy/src/index.ts` 中 Token 为硬编码值 `你的 Notion Token`，未使用环境变量。
+- 应改写为从 `env.NOTION_API_TOKEN` 注入，增强安全性与可部署性。
+
+---
+
+### 📌 建议的未来规划与重构清单
+
+| 优化项 | 说明 |
+|--------|------|
+| ✅ 启用 `notion-proxy` | 所有 Notion 请求改走代理，避免直接暴露 API Token |
+| ✅ 在 `proxy/index.ts` 中改用 `env.NOTION_API_TOKEN` | 配合 `wrangler.toml` 注入 |
+| ✅ 写一个 `schema/course-notion.schema.json` | 配合 `validate:schema` 校验 Notion 页面结构 |
+| ✅ 抽象字段解析函数 | 如 `parseNotionText()`、`parseRichText()` 等 |
+| ✅ 未来可支持缓存 Notion 响应到 KV/R2 | 降低延迟，减少请求次数 |
+| ✅ 增加错误日志 + fallbacks | 防止未定义字段导致 `undefined` 渲染页面 |

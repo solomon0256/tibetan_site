@@ -1,0 +1,75 @@
+
+
+# Progress 模块文档（xAPI 进度追踪系统）
+
+## 🧩 模块职责
+负责记录和查询用户学习过程中的行为数据（actor、verb、object、result 等），用于后续课程进度同步、学习记录分析、行为建模等功能。遵循 xAPI（Experience API）标准接口格式。
+
+---
+
+## 📁 模块文件结构
+
+- ✅ `/src/pages/api/statement.ts`：主要的数据入口，处理 POST（写入）与 GET（查询）请求
+- ✅ `/src/types/xapi.ts`：定义 xAPI 数据结构（类型安全）
+- ✅ `/src/lib/api/xapi.client.ts`：前端调用封装，提供 `submitXAPIStatement()` 与 `fetchXAPIStatements()`
+- ✅ `/migrations/001_init.sql`：初始化 `statements` 表结构（D1 数据库）
+- ✅ `/types/env.d.ts`：环境变量绑定中定义 `LRS_DB` 数据库（供 Astro Locals 注入）
+
+---
+
+## 🧪 响应结构样式
+
+- ✅ 成功写入（POST）：
+```json
+{
+  "status": "ok",
+  "id": "5fe7bd71-...-d7c82923"
+}
+```
+
+- ✅ 查询返回（GET）：
+```json
+{
+  "statements": [
+    {
+      "id": "xxx",
+      "actor": "user@example.com",
+      "verb": "completed",
+      "object": "lesson:101",
+      "result": "{...}",
+      "timestamp": "2025-07-06T12:00:00.000Z",
+      "session_id": "session-abc"
+    }
+  ]
+}
+```
+
+---
+
+## ⚙️ 特别机制说明
+
+- DEV 模式下采用 mock database 避免 Cloudflare D1 崩溃；
+- 在生产环境通过 `locals.env.LRS_DB` 注入 Cloudflare D1 数据库；
+- 所有写入自动生成 UUID 与 timestamp；
+- 可选字段包括：`session_id`（前端传入的学习会话标识）和 `result`（支持嵌套 JSON）；
+- 前端接口使用 `fetch('/api/statement')`，避免 hardcode 路径；
+- 严格要求 content-type 为 `application/json`，否则直接 400。
+
+---
+
+## 🛑 后续开发注意事项（长期记忆重点）
+
+1. 所有 API 接口必须使用明确 Schema 校验（后续可引入 zod 校验 body）；
+2. 接口响应必须统一结构，错误格式固定 `{ error: string }`；
+3. xAPI 写入逻辑可单独封装成 `lib/xapi-server.ts` 以便测试；
+4. 🚫 不要再使用 `/routes/xapi.ts`、`ProgressDO.ts`、`workers.ts` 中旧的进度逻辑；
+5. 🧪 测试应构建 `/test/statement.test.ts` 模拟 GET/POST 场景（使用 Miniflare）；
+6. 所有前端调用均需调用 `xapi.client.ts` 中封装方法，不要直接 fetch；
+7. 查询接口未来可增加分页、时间范围过滤（暂留接口向前兼容空间）；
+8. 所有字段命名必须与 `statements` 表严格一致（避免拼写错乱）；
+9. 🚨 接口一旦部署后要考虑幂等性与数据不可变性（避免覆盖、删除语句）；
+10. 所有使用该模块的组件，必须统一接口调用，不允许自定义写入逻辑。
+
+---
+
+✅ 当前进度模块已准备完毕，下一步可对接前端课程页、进度提示组件、统计可视化图表等。

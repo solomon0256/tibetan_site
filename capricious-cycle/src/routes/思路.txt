@@ -1,0 +1,174 @@
+# ✅ 模块开发纪律（长期记忆）
+
+⚠️ 本项目中关于模块开发的所有行为，必须遵守以下要求：
+
+1. 所有回答必须采取批判性思维，明确指出问题、设计缺陷与技术盲区，拒绝空洞附和。
+2. 所有代码模块必须具备明确边界，职责单一，能独立测试，拒绝耦合与隐式依赖。
+3. 所有项目设计必须先写文档、理清数据结构、再做功能实现，禁止边做边猜。
+4. 构建流程、测试流程、依赖项，均需有明确记录与版本保障，禁止隐式改动。
+5. 测试体系必须明确 mock 点、覆盖率要求、CI 配置等，禁止“能跑就行”心态。
+6. 每一个模块开发完成后，必须整理成结构化的思路文档，详列接口、依赖、风险。
+7. 一切重复错误都必须在文档中留下教训总结，未来不得重复，追溯到人。
+
+本文件作为 `auth` 模块文档示例，需长期维持规范性、可扩展性与安全性，后续模块需对齐此结构与流程。
+
+# Auth 模块文档（认证：刷新 / 注销）
+
+## ✅ 模块职责
+
+| 功能         | API Endpoint                       | 行为概要说明 |
+|--------------|------------------------------------|---------------|
+| 刷新 JWT     | `POST /api/v1/auth/refresh`        | 使用 `refreshToken` 换取新的 JWT |
+| 注销会话     | `POST /api/v1/auth/logout`         | 当前无状态处理，仅响应 204，可扩展为加入黑名单 |
+
+---
+
+## 🗂️ 文件组成
+
+| 文件路径 | 说明 |
+|----------|------|
+| `src/routes/auth.ts` | 注册 API 路由：refresh、logout |
+| `src/lib/auth-utils.ts` | 封装 Supabase JWT 验证与刷新逻辑 |
+| `src/workers.ts` | 入口 Worker，使用 Router 路由调用 |
+| `test/auth.test.ts` | 使用 Miniflare 执行端对端接口测试 |
+| `package.json` | 构建脚本中配置 `--external:../src/lib/auth-utils` 防止 auth-utils 被打包 |
+
+---
+
+## 🔗 模块依赖链
+
+- itty-router：轻量路由器
+- @supabase/supabase-js：Supabase 后端身份验证
+- Miniflare：模拟 Cloudflare Workers 环境
+- Jest：测试框架
+
+---
+
+## 🔧 路由与架构逻辑
+
+```
+Client
+  │
+  ├── POST /api/v1/auth/refresh ─────────┐
+  │                                      ↓
+  ├── POST /api/v1/auth/logout ──────┐   │
+  │                                  ↓   ↓
+[workers.ts] ──> [auth.ts router] ──> [auth-utils.ts] (call Supabase)
+```
+
+---
+
+## ✅ 测试覆盖（test/auth.test.ts）
+
+## 📤 API 响应结构示例
+
+### 🔄 Refresh Token 响应样例
+
+```
+POST /api/v1/auth/refresh → 200
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+- 返回字段：`token`（JWT 字符串）
+- 格式：标准 Base64 JWT，可被解析
+- 建议前端：缓存该 token，并留意过期时间（Supabase 默认 1 小时）
+
+### 🚪 Logout 响应样例
+
+```
+POST /api/v1/auth/logout → 204
+无响应体
+```
+
+| 测试内容        | 描述 |
+|-----------------|------|
+| Refresh 测试    | 发送 refreshToken → 应返回 200 和合法 JWT |
+| Logout 测试     | 发送 accessToken → 应返回 204 |
+
+- 使用 `jest.mock()` 对 Supabase 行为进行模拟
+- 使用 Miniflare 调用 worker.bundle.js 文件执行集成测试
+
+---
+
+## 🧯 问题记录与解决
+
+| 问题编号 | 问题简述 | 原因分析 | 最终解决方式 |
+|----------|----------|-----------|----------------|
+| ❌ P1 | 打包后 `auth-utils.ts` 无法在 Miniflare 中 mock | Worker 被完全 bundle，mock 无效 | ✅ `--external` 强制排除打包 |
+| ❌ P2 | Jest 报错找不到 stub 模块 | 曾误用 `moduleNameMapper` | ✅ 转为内联 `jest.mock()` |
+| ❌ P3 | Worker 启动时报 “Dynamic require not supported” | 被打包依赖中含 dynamic require | ✅ external 掉复杂模块 |
+| ⚠️ P4 | 测试始终 500 | mock 无效或 env 缺失 | ✅ 修复 mock、生效 dotenv |
+
+---
+
+## 🛡️ 开发建议与规范
+
+| 类别 | 建议 / 原因 |
+|------|--------------|
+| ✅ 依赖注入 | 所有函数参数均显式传入 env |
+| ✅ mock 写法 | 使用内联 `jest.mock()`，禁止 moduleNameMapper |
+| ✅ 构建配置 | 配置 external 白名单（如 auth-utils） |
+| ✅ 路由职责 | 路由文件禁止直接写业务逻辑，应调用封装模块 |
+| ✅ Worker 架构 | 保持最简洁，只做分发；支持未来多路由拆分 |
+
+---
+
+## 🔚 模块完成度与风险
+
+| 子模块 | 状态 | 测试覆盖 | 风险 |
+|--------|------|------------|------|
+| `/auth/refresh` | ✅ 完成 | ✅ 完整测试（mock） | ⚠️ Supabase 接口稳定性 |
+| `/auth/logout` | ✅ 完成 | ✅ 基础测试 | ⛔ 无黑名单机制 |
+| auth-utils.ts | ✅ 完成 | ❌ 无单元测试 | ⚠️ 全依赖集成测试保障 |
+
+---
+
+## 🔁 后续计划建议
+
+- 给 `auth-utils.ts` 写独立单元测试（不依赖 Worker）
+- 完善 `.env.example` 文档，明确 Supabase 依赖
+- 检查所有打包配置文件，确保 external 配置覆盖所有依赖组件
+
+## 🧠 模块长期开发建议
+
+- ☑️ 建议将 `auth-utils.ts` 拆分为逻辑单元模块（如 jwt.ts / supabase.ts），提升测试隔离性与可维护性
+- ☑️ 后续所有工具函数都应具备 `env` 明确依赖注入（避免全局依赖）
+- ☑️ 若未来接入 OAuth 登录（Google、Kakao 等），应新建 `/login/:provider` 路由并保持与本模块解耦
+- ☑️ 若 token 机制更换（如 OAuth 2 Bearer / Session Cookie），应统一由 `auth-utils.ts` 层封装
+- ☑️ 未来可引入 Redis / D1 存储黑名单，实现真正的服务端 Logout
+- ☑️ 若使用 Cloudflare Access / OIDC，应调整 Supabase 客户端策略以支持 token introspection
+- ☑️ 建议补充日志追踪（如 Sentry 标签加入用户 ID、路径来源），以利于安全审计
+
+---
+
+## 📌 需长期牢记的开发原则（来自记忆）
+
+1. **所有函数必须显式传入依赖（如 `env`、`context`），禁止使用隐式全局变量。**
+   - ✅ 理由：便于测试隔离、Mock 替换、依赖追踪。
+2. **测试用例中的 mock 必须使用内联写法（`jest.mock()`），禁止使用 moduleNameMapper 或额外 stub 文件。**
+   - ✅ 理由：避免路径映射错误、提升可读性。
+3. **构建脚本中所有 external 模块必须统一配置，避免自动打包破坏 mock。**
+   - ✅ 建议配置中长期保留：
+     ```bash
+     --external:../src/lib/auth-utils
+     ```
+4. **统一开发结构：每个模块都应包含如下组成**
+   - API 路由层（仅处理请求/响应格式）
+   - 工具/服务层（封装实际逻辑）
+   - 测试层（端对端测试 + 单元测试）
+   - 文档说明（如当前文档）
+
+---
+
+## 📌 当前模块可能的技术债与建议拆解项（提前规划）
+
+| 模块区域 | 建议重构 | 目的 |
+|----------|-----------|------|
+| `auth-utils.ts` | 拆分为 `jwt.ts` 与 `supabase.ts` | 解耦 Supabase 客户端与 JWT 逻辑，提升测试能力 |
+| `test/auth.test.ts` | 拆分为 `refresh.test.ts` 与 `logout.test.ts` | 保持测试粒度清晰、降低维护复杂度 |
+| 构建配置 | 建议单独抽出 `scripts/build-worker.js` 并支持 CLI 参数传入 | 为支持多环境构建（测试 / 生产）做准备 |
+| `.env.example` | 增加字段说明（如 token 有效期、黑名单计划） | 降低使用歧义、利于团队协作 |
+
+---

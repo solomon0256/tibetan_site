@@ -1,3 +1,4 @@
+//src/workers.ts
 import authRouter from './routes/auth';
 import type { Request } from '@cloudflare/workers-types';
 
