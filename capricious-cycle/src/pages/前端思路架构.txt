@@ -8,6 +8,7 @@
 - **学习进度数据存储**：Cloudflare Workers + Cloudflare D1
 - **部署环境**：Cloudflare Pages
 
+
 ## 二、核心开发工具链
 - **设计工具**：Figma
 - **快速原型绘制**：Excalidraw
@@ -19,6 +20,35 @@
 - **响应式布局**：Tailwind CSS内置响应式类
 - **API接口调试工具**：Hoppscotch.io / Postman
 - **持续集成部署**：GitHub Actions + Wrangler
+
+### 工具链结构分层说明（补充）
+工具链按照前端开发任务分为五个层次：
+
+1. ✏️ 原型设计与规划层
+   - Figma：UI界面与设计系统原型绘制
+   - Excalidraw：快速草图绘制，用于页面区块/组件功能规划
+   - Notion：功能结构、任务分工、内容规范撰写协作区
+
+2. 🧱 页面构建与组件开发层
+   - Astro：前端框架，支持多页面 + 组件组合式开发
+   - Tailwind CSS：实用类优先的样式系统
+   - Flowbite：预制组件库，兼容Tailwind，快速拉通常见元素
+
+3. 🔗 数据与后端连接层
+   - Notion API：课程内容读取
+   - Supabase：用户认证（OAuth、JWT）、数据库调用
+   - Cloudflare Workers + D1：学习进度记录、xAPI 数据存储
+
+4. ✨ 动效与交互增强层
+   - AOS（Animate On Scroll）：进入动画
+   - Astro Transitions：页面切换动效支持
+   - Tailwind hover/transition：细粒度交互体验控制
+
+5. 🚀 构建与部署自动化层
+   - GitHub Actions：持续集成（CI）
+   - Wrangler：Cloudflare Pages自动部署与配置同步
+   - Sentry（预留）：错误监控
+   - Lighthouse（预留）：性能分析
 
 
 
@@ -76,6 +106,7 @@
 
 ---
 
+
 ## 七、推荐模板与预制方案（可参考，不强依赖）
 
 | 模板名称 | 适用情况 | 特点 |
@@ -129,7 +160,7 @@
 ## 九、前端构建执行步骤（项目流程图）
 
 1. ✅ 明确页面结构（已完成）
-2. ⏳ 规划整体架构、工具链与职责分工（已完成）
+2. ⏳ 规划整体架构、工具链与职责分工（进行中）
 3. ⏳ 写入页面结构文档与开发规范（进行中）
 4. ⏳ 开始逐页面生成 `.astro` 页面文件（待执行）
 5. ⏳ 页面组件开发（HeroSection, CourseCard 等）
