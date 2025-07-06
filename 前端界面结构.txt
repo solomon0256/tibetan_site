@@ -1,5 +1,3 @@
-
-
 src/pages/
 ├── index.astro                   # 首页
 ├── login.astro                   # 登录页
@@ -7,10 +5,10 @@ src/pages/
 ├── courses/
 │   ├── index.astro               # 课程主界面
 │   └── [id].astro                # 单课程详情页（动态路由）
-├── culture-history/
-│   ├── index.astro               # 风土与历史主页
-│   ├── humanities.astro          # 人文历史
-│   └── travel.astro              # 旅游与景观
+├── humanities/
+│   └── index.astro               # 人文历史博物馆
+├── travel/
+│   └── index.astro               # 旅游与景观介绍
 ├── dictionary.astro              # 词典功能
 ├── wiki.astro                    # 百科（可跳转外链）
 
@@ -36,9 +34,10 @@ src/pages/
 
 ### 4. 课程界面（/courses）
 - 导航栏
-- 两大按钮（或分类入口）：
-  - 语言学习课程
-  - 风土与历史课程
+- 默认展示语言与文化课程列表（课程卡片）
+- 顶部两个按钮：
+  - 语言与文化（默认选中，显示所有课程）
+  - 风土与历史（点击后显示两个大按钮：人文历史博物馆、旅游与景观）
 
 ### 5. 单个课程详情界面（/courses/[id]）
 - 课程介绍（标题、简介）
@@ -46,17 +45,11 @@ src/pages/
 - 章节导航
 - 学习进度显示（xAPI联动）
 
-### 6. 风土与历史界面（/culture-history）
-- 导航栏
-- 两大按钮：
-  - 人文历史博物馆
-  - 旅游与景观介绍
-
-### 7. 人文历史博物馆（/culture-history/humanities）
+### 7. 人文历史博物馆（/humanities）
 - 文化相关内容（文章、图片、视频等）
 - 内容分类（可选）
 
-### 8. 旅游与景观介绍（/culture-history/travel）
+### 8. 旅游与景观介绍（/travel）
 - 旅游景观相关内容（文章、图片、推荐线路等）
 - 内容分类（可选）
 
