@@ -1,0 +1,81 @@
+
+# 接口映射说明文档（页面 → API）
+版本：v1
+作者：系统自动生成
+说明：每个页面依赖的 API 接口列表，便于联调与维护。
+
+---
+
+## 📄 页面：主页（index.astro）
+- 用途：展示网站介绍、跳转入口、推荐课程
+- 使用接口：
+  - GET /api/v1/courses       → 获取课程元数据列表（用于推荐卡片）
+
+---
+
+## 📄 页面：登录/注册（log.astro）
+- 用途：使用 Supabase Auth 登录，无需额外 API
+- 使用接口：
+  - [Supabase SDK 内置]       → 无需本项目接口
+
+---
+
+## 📄 页面：仪表盘（dashboard.astro）
+- 用途：展示用户学习进度与最近浏览
+- 使用接口：
+  - GET /api/v1/progress?actor={userId} → 获取学习进度
+  - GET /api/v1/courses                → 获取课程信息用于展示
+
+---
+
+## 📄 页面：课程总览（courses/index.astro）
+- 用途：按分类或关键词浏览课程
+- 使用接口：
+  - GET /api/v1/courses?category=xxx&search=xxx → 获取课程列表
+  - GET /api/v1/categories                      → 获取课程分类列表
+
+---
+
+## 📄 页面：课程详情页（courses/[slug].astro）
+- 用途：展示课程完整内容、媒体与互动记录
+- 使用接口：
+  - GET /api/v1/courses/:slug        → 获取单个课程元信息
+  - GET /api/v1/content/:slug        → 获取课程标准化内容 JSON
+  - POST /api/v1/statement           → 提交学习行为（xAPI）
+  - GET /api/v1/media/:filename      → 获取媒体资源直链（可选）
+
+---
+
+## 📄 页面：人文页（humanities/index.astro）
+- 用途：展示文化专题、文史类课程（可视为 courses 子集）
+- 使用接口：
+  - GET /api/v1/courses?category=人文 → 获取相关课程列表
+
+---
+
+## 📄 页面：旅行页（travels/index.astro）
+- 用途：展示与西藏旅游相关课程与内容
+- 使用接口：
+  - GET /api/v1/courses?category=旅行 → 获取相关课程列表
+
+---
+
+## 📄 页面：词典与翻译工具（tools/dictionary.astro）
+- 用途：嵌入第三方字典或提供关键词查询
+- 使用接口：
+  - 暂无项目自建接口（未来可拓展）
+
+---
+
+## 📄 页面：百科/礼仪指南（tools/wiki.astro）
+- 用途：展示进藏须知、礼仪与百科
+- 使用接口：
+  - 暂无项目自建接口（未来可拓展）
+
+---
+
+## 📄 页面：结算页（checkout/order.astro）
+- 用途：用户支付课程或订阅服务
+- 使用接口：
+  - POST /api/v1/orders              → 创建支付订单
+  - GET /api/v1/orders/:orderId      → 查询订单支付状态

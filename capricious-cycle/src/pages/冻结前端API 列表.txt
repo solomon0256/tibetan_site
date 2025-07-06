@@ -6,7 +6,7 @@
 
 接口路径                         | 方法   | 描述
 --------------------------------|--------|--------------------------------------------
-GET    /api/v1/categories        | GET    | 获取课程分类列表
+GET    /api/v1/categories        | GET    | 获取课程分类列表（无必要！！！！删除）
 GET    /api/v1/content-slugs     | GET    | 获取所有课程 slug 列表
 GET    /api/v1/courses           | GET    | 获取课程元数据列表
 GET    /api/v1/courses/:slug     | GET    | 获取单个课程详情
