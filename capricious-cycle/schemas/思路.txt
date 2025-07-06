@@ -1,0 +1,117 @@
+
+
+
+# 📦 JSON Schema 模块思路与校验系统结构文档
+
+本模块围绕 `schemas/` 文件夹，构建了项目的数据模型定义系统、版本控制机制、结构校验流程，以下为详细说明：
+
+---
+
+## ✅ 模块构成说明
+
+### 1. 用户模型：`schemas/user.schema.json`
+- 描述：定义平台用户的数据结构。
+- 字段：
+  - `id`: 用户唯一标识符
+  - `email`: 用户邮箱，必须是 email 格式
+  - `name`: 用户名称
+  - `role`: 角色枚举（student, admin, editor）
+  - `createdAt`: 创建时间，date-time 格式
+- 特性：
+  - `additionalProperties: false`，禁止非法字段
+  - 默认 `role` 为 `student`
+- 用途：
+  - 用户注册与管理界面数据结构校验
+  - Supabase / Notion 用户数据同步结构一致性验证
+
+---
+
+### 2. 课程模型：`schemas/course.schema.json`
+- 描述：定义课程内容数据结构（由 Notion 页面解析得到）。
+- 字段：
+  - `id`, `title`, `slug`, `category`, `price`, `updatedAt`, `h5pId`
+  - 其中 `slug` 为 SEO 路径关键字段，`h5pId` 可为空
+- 用途：
+  - 与 Notion 数据拉取后的前端展示数据一致性验证
+  - 前端渲染、课程详情、分类归属、支付逻辑校验
+
+---
+
+### 3. 进度模型：`schemas/progress.schema.json`
+- 描述：记录每位用户每节课的完成情况与成绩。
+- 字段：
+  - `userId`, `courseId`, `lessonId`, `completed`, `score`, `updatedAt`
+- 特性：
+  - `score` 限定 0–100 分
+  - `updatedAt` 为 ISO 时间戳
+- 用途：
+  - 页面进度状态展示
+  - 与 xAPI 学习语句互补，提供轻量进度记录
+
+---
+
+### 4. 统一版本基线：`schemas/schema_version.json`
+- 内容示例：
+  ```json
+  {
+    "schemaVersion": "1.0.0"
+  }
+  ```
+- 用途：
+  - 每次 CI 校验所有 schema 是否与统一版本匹配
+  - 作为 schema 数据管理的版本锚点，避免分叉失控
+
+---
+
+## 🧪 校验机制脚本：`scripts/validate_schema_version.ts`
+
+- 技术栈：
+  - `ajv` + `ajv-formats` → 严格模式下校验 JSON Schema
+  - 校验规则包括：
+    - 每个 schema 都能被 compile
+    - 每个 schema 的 `schemaVersion` 与版本文件一致
+
+- 触发方式：
+  ```bash
+  npm run validate:schema
+  # 对应命令：tsx scripts/validate_schema_version.ts
+  ```
+
+- 用途：
+  - 项目构建前保证 schema 结构合法
+  - 可接入 pre-commit hook / GitHub Actions 等 CI 流程
+
+---
+
+## 🔧 Worker 构建脚本：`scripts/build-worker.js`
+
+- 基于 `esbuild` 构建 `src/workers.ts` 为 Cloudflare Worker 执行文件
+- 配置参数：
+  - `bundle: true`，输出为单一文件
+  - `target: esnext`
+  - `platform: neutral`
+- 输出文件：`dist/worker.mjs`
+- 用途：
+  - 支持 Miniflare / wrangler 本地调试与部署测试
+
+---
+
+## 🧠 未来注意事项与拓展建议
+
+1. 建议为每个 schema 创建样本测试用例：
+   - 可放于 `test/schemas/*.sample.json`
+   - 使用 Ajv 编写自动验证回归脚本
+
+2. 可升级为 NPM 私有包形式管理 schema：
+   - 如 `@tibetan-site/schemas`
+   - 便于多仓库、多项目复用
+
+3. 引入 pre-commit / pre-push 阶段校验：
+   - 确保开发中 schema 变更不影响系统稳定性
+
+4. 后续支持 `schemaVersion` 的分支策略（例如：支持多版本）
+
+5. 长期引入 JSON Schema → TypeScript 类型生成工具：
+   - 如 `json-schema-to-typescript`、`zod-to-json-schema` 反向生成
+
+---
