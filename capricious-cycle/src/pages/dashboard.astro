@@ -1,43 +1,47 @@
 ---
-// src/pages/subscriptions.astro
-import { supabase } from '../lib/supabase.js';
-
-const { data, error } = await supabase
-  .from('subscriptions')
-  .select('*');
-
-if (error) throw error;
+import UserStatusPanel from '../components/dashboard/UserStatusPanel.astro'
+import PaymentPanel from '../components/dashboard/PaymentPanel.astro'
+import SupportPanel from '../components/dashboard/SupportPanel.astro'
+import BannerPanel from '../components/dashboard/PromoBanner.astro'
 ---
+
 <!--
   📄 页面名称：个人中心（Dashboard）
   📍 页面路径：/dashboard
   📦 所属模块：用户系统 / 会员系统
   🎯 页面功能：
     - 展示用户欢迎信息和基本资料
-    - 展示我的课程、学习进度、打卡历史
-    - 提供用户信息设置入口（如头像、昵称）
-
-  🎨 组件依赖：
-    - <UserProfile />
-    - <CourseProgress />
-    - <AccountSettings />
-
-  🧩 页面意义：
-    - 用户在站点中的专属空间，强化用户归属感
-    - 支撑个性化推荐与学习行为追踪
+    - 展示当前会员状态与支付方式
+    - 提供联系客服与反馈功能入口
+    - 支撑学习记录、订阅管理等扩展内容
 
   🧠 注意事项：
     - 页面需确保用户已登录，否则应跳转到 /login
-    - 后续可添加付费状态与订阅管理功能
+    - 后续可添加学习进度与个性化推荐模块
 -->
 
-<html>
-  <body>
-    <h1>My Subscriptions</h1>
-    <ul>
-      {data.map((row) => (
-        <li>{row.id}: {row.plan} — {row.status}</li>
-      ))}
-    </ul>
-  </body>
-</html>
+<main class="relative p-6 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen bg-gray-50">
+
+  <!-- 顶部个人中心图标 -->
+  <div class="absolute top-4 left-4">
+    <button
+      class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center shadow"
+      aria-label="个人中心"
+    >
+      🙍
+    </button>
+  </div>
+
+  <!-- 左侧信息栏 -->
+  <div class="md:col-span-2 space-y-4">
+    <UserStatusPanel />
+    <PaymentPanel />
+    <BannerPanel />
+  </div>
+
+  <!-- 右侧支持栏 -->
+  <div class="md:col-span-1">
+    <SupportPanel />
+  </div>
+
+</main>
