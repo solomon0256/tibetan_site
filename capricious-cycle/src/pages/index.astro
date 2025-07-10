@@ -2,6 +2,14 @@
 import { getCourses } from '../lib/notion.js';
 import { supabase } from '../lib/supabase.js';
 
+import Navbar from '../components/home/Navbar.astro';
+import HeroBanner from '../components/home/HeroBanner.astro';
+import EntryCards from '../components/home/EntryCards.astro';
+import SimpleIntro from '../components/home/SimpleIntro.astro';
+import PlatformIntro from '../components/home/PlatformIntro.astro';
+import Events from '../components/home/Events.astro';
+import Footer from '../components/home/Footer.astro';
+
 const courses = await getCourses();
 const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 ---
@@ -24,83 +32,32 @@ const { data: sessionData, error: sessionError } = await supabase.auth.getSessio
 
   🧠 注意事项：
     - 当前页面以测试逻辑为主，后续可能替换为真正的首页内容（如 Hero、CTA、导航等）
+
+  🧱 当前首页组件结构（v1.0）：
+    - Navbar                 // 顶部导航栏（Logo + 登录注册）
+    - HeroBanner            // 头部宣传图与按钮（→ 登录注册页）
+    - EntryCards            // 功能入口卡片区（如藏语入门/文化/旅游）
+    - SimpleIntro           // 简单藏语介绍（原课程预览按钮）
+    - PlatformIntro         // 平台介绍说明（→ 登录注册页）
+    - Events                // 活动区（暂未启用）
+    - Footer                // 页脚信息栏
 -->
 
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <title>课程列表</title>
-    <script type="module" is:inline>
-      (async () => {
-        // xAPI 测试代码
-        const {
-          submitXAPIStatement: submitStatement,
-          fetchXAPIStatements: getStatements
-        } = await import('/src/lib/api/xapi.client.ts');
-
-        const testStatement = {
-          actor: {
-            name: 'test-user',
-            mbox: 'mailto:test-user@example.com',
-            objectType: 'Agent'
-          },
-          verb: {
-            id: 'http://adlnet.gov/expapi/verbs/viewed',
-            display: { 'en-US': 'viewed' }
-          },
-          object: {
-            id: 'http://example.com/course_home',
-            objectType: 'Activity',
-            definition: {
-              name: { 'en-US': 'Course Home' },
-              description: { 'en-US': 'The course home page' }
-            }
-          },
-          result: {
-            score: { raw: 100 },
-            success: true
-          },
-          timestamp: new Date().toISOString()
-        };
-
-        console.log('提交前内容', testStatement);
-
-        if (!testStatement.actor || !testStatement.verb || !testStatement.object) {
-          console.error('[xAPI] 语句缺少必要字段');
-          return;
-        }
-
-        try {
-          await submitStatement(testStatement);
-          console.log('[xAPI] 提交成功');
-
-          const res = await getStatements('test-user');
-          console.log('[xAPI] 查询结果：', res);
-        } catch (err) {
-          console.error('[xAPI] 错误：', err);
-        }
-      })();
-    </script>
   </head>
   <body>
-    <div class="min-h-screen bg-gray-50 text-gray-800 p-8">
-      <h1 class="text-3xl font-bold mb-6">课程列表</h1>
-      <ul class="space-y-4">
-        {courses.map((course) => (
-          <li class="bg-white shadow rounded-lg p-4">
-            <strong>{course.title}</strong><br />
-            类别：{course.category}  |  价格：¥{course.price}
-          </li>
-        ))}
-      </ul>
-    </div>
-    <div class="mt-10 p-4 bg-yellow-100 border border-yellow-300 rounded">
-      <h2 class="font-semibold text-lg mb-2">[Supabase 连接测试]</h2>
-      {sessionError ? (
-        <p class="text-red-600">出错了：{sessionError.message}</p>
-      ) : (
-        <p class="text-green-700">当前用户：{sessionData.session?.user?.email ?? '未登录'}</p>
-      )}
-    </div>
+    <main class="min-h-screen bg-white text-gray-900 px-8 py-12">
+      <Navbar />
+      <HeroBanner />
+      <EntryCards />
+      <SimpleIntro />
+      <PlatformIntro />
+      <Events />
+
+      <Footer />
+    </main>
   </body>
 </html>

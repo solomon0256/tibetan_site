@@ -83,3 +83,26 @@ src/pages/
 > 注：上述状态管理需求中的“✅”表示后续需统一变量管理（如登录状态、进度状态等），当前可暂缓实现，但需要预留结构。
 
 ---
+
+## 页面 ↔ 功能点 ↔ API 接口 映射表（初稿）
+
+| 页面路径              | 功能点描述                       | 调用接口/API 路径                      | 说明                                           |
+|-----------------------|----------------------------------|----------------------------------------|------------------------------------------------|
+| `/login`              | 用户登录验证                     | Supabase Auth                          | 前端调用 Supabase SDK，处理登录/注册逻辑       |
+| `/dashboard`          | 获取当前用户信息                 | Supabase Auth                          | 从 Supabase 获取当前 session 与 profile 信息   |
+| `/dashboard`          | 查询用户学习进度                 | `GET /api/v1/progress`                 | 获取 xAPI 汇总进度信息                         |
+| `/courses`            | 获取课程列表                     | `GET /api/v1/courses`                  | 展示所有课程卡片（可选支持搜索/筛选）         |
+| `/courses`            | 获取课程分类                     | `GET /api/v1/categories`               | 分类按钮动态获取课程类型（可后置）             |
+| `/courses/[id]`       | 获取课程详情                     | `GET /api/v1/courses/:slug`            | 课程基本信息、媒体资源、结构化内容             |
+| `/courses/[id]`       | 获取课程内容 JSON                | `GET /api/v1/content/:slug`            | 播放器加载课程内容结构                         |
+| `/courses/[id]`       | 提交学习行为（播放记录）         | `POST /api/v1/statement`               | 播放器或交互式元素触发 xAPI 写入               |
+| `/courses/[id]`       | 查询学习进度                     | `GET /api/v1/progress`                 | 获取当前课程学习记录                           |
+| `/tools/dictionary`   | 查询藏语词条/翻译                | 本地 JSON / 预留 `/api/v1/dictionary` | 当前暂用本地查询，可拓展 API 支持              |
+| `/tools/wiki`         | 加载藏区礼仪 Notion 数据         | Notion API Proxy                       | 当前通过 Notion 导出或代理获取                 |
+| `/humanities`         | 加载人文内容（图文/视频）        | Notion API Proxy                       | 同上                                           |
+| `/travel`             | 加载旅游内容（图文/推荐）        | Notion API Proxy                       | 同上                                           |
+| `/checkout`（未来）   | 创建支付订单                     | `POST /api/v1/orders`                  | 支持一次性或订阅订单生成                       |
+| `/checkout/result`    | 查询订单状态                     | `GET /api/v1/orders/:orderId`          | 获取支付结果展示页面内容                       |
+| `/media/*`            | 加载媒体资源                     | `GET /api/v1/media/:filename`          | 可选代理至 R2 或返回签名链接                   |
+
+> 所有 API 接口均默认前缀 `/api/v1`，如无特殊说明，采用 JSON 响应格式。
