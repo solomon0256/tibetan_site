@@ -1,5 +1,5 @@
 ---
-interface Props {
+export interface Props {
   tabs: string[];
   activeIndex?: number;
   id?: string;
@@ -23,15 +23,14 @@ const { tabs, activeIndex = 0, id }: Props = Astro.props;
   ))}
 </div>
 
-<script>
+<script type="module">
   setTimeout(() => {
     const container = document.getElementById('main-tab-switcher');
     if (!container) return;
 
     container.addEventListener('click', (e) => {
-      const target = e.target;
+      const target = /** @type {HTMLElement} */ (e.target);
       if (
-        target instanceof HTMLElement &&
         target.tagName === 'BUTTON' &&
         target.dataset.index !== undefined
       ) {
@@ -50,7 +49,7 @@ const { tabs, activeIndex = 0, id }: Props = Astro.props;
           bubbles: true,
           composed: true
         });
-        container.dispatchEvent(event); // ✅ 派发到容器
+        container.dispatchEvent(event);
       }
     });
   }, 0);

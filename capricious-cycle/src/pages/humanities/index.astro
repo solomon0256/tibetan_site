@@ -1,23 +1,77 @@
+---
+import TopBar from '../../components/layout/TopBar.astro'
+import TypeSwitcher from '../../components/common/TabSwitcher.astro'
+import CategoryTabs from '../../components/HistoryView/CategoryTabs.astro'
+import SuggestionBlock from '../../components/HistoryView/SuggestionBlock.astro'
+import EntryList from '../../components/HistoryView/EntryList.astro'
+import TravelTypeTabs from '../../components/TravelView/TravelTypeTabs.astro'
+import RouteSuggestion from '../../components/TravelView/RouteSuggestions.astro'
+import ScenicEntryList from '../../components/TravelView/ScenicEntryList.astro'
 
+interface Props {
+  tabs: string[];
+  activeIndex?: number;
+  id?: string;
+}
 
-<!--
-  📄 页面名称：人文与历史博物馆页和旅游与景观界面
-  📍 页面路径：/humanities
-  📦 所属模块：风土与历史展示
-  🎯 页面功能：
-    - 展示与西藏历史、人文、宗教、文化，景点，旅游相关的文章或图文内容
-    - 支持点击词条展开详细介绍或跳转至内容页（后续可扩展）
+const tabs = Astro.props.tabs ?? ["人文与历史", "旅游与景观"];
+const activeIndex = Astro.props.activeIndex ?? 0;
+const id = Astro.props.id ?? "main-tab-switcher";
 
-  🎨 组件依赖：
-    - <MuseumEntryList />
-    - <CultureCardGrid />
-    - <BreadcrumbNav />
+const categories = ["建筑", "饮食", "生活", "服饰", "礼仪", "信仰", "宗教", "文献"]
+const activeCategory = "建筑"
 
-  🧩 页面意义：
-    - 建立藏文化知识体系的视觉入口，强化文化传播属性
-    - 提升用户对西藏历史文化背景的整体认知
+const types = ["自由探索", "信仰朝圣", "文化体验", "生态之旅"]
+const activeType = "自由探索"
+---
 
-  🧠 注意事项：
-    - 页面内容应具备一定深度与结构性
-    - 后续可引入图文、年代表、时间线、词条检索等模块
--->
+<div id={id} class="flex gap-4 border-b pb-2">
+  <main class="flex-1 min-h-screen bg-white">
+    <TopBar title="风土与历史" />
+
+    <!-- 切换按钮 -->
+    <section class="px-6 py-4 border-b border-gray-200">
+      <TypeSwitcher client:load id="main-tab-switcher" tabs={tabs} activeIndex={activeIndex} />
+    </section>
+
+    <!-- 人文与历史视图 -->
+    <section id="humanities-view" class="px-6 py-4">
+      <CategoryTabs categories={categories} activeCategory={activeCategory} id="category-tabs" />
+      <h2 class="text-xl font-semibold mt-6 mb-4">推荐内容</h2>
+      <SuggestionBlock />
+      <h2 class="text-xl font-semibold mt-6 mb-4">词条索引</h2>
+      <EntryList />
+    </section>
+
+    <!-- 旅游与景观视图 -->
+    <section id="travel-view" class="px-6 py-4 hidden">
+      <TravelTypeTabs types={types} activeType={activeType} id="travel-type-tabs" />
+      <h2 class="text-xl font-semibold mt-6 mb-4">推荐路线</h2>
+      <RouteSuggestion routes={[]} />
+      <h2 class="text-xl font-semibold mt-6 mb-4">景点分类浏览</h2>
+      <ScenicEntryList entries={[]} />
+    </section>
+  </main>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const switcher = document.getElementById('main-tab-switcher');
+    const human = document.getElementById('humanities-view');
+    const travel = document.getElementById('travel-view');
+
+    if (!switcher || !human || !travel) return;
+
+    switcher.addEventListener('tabchange', (e) => {
+      const index = (e as CustomEvent).detail?.index ?? 0;
+
+      if (index === 0) {
+        human.classList.remove('hidden');
+        travel.classList.add('hidden');
+      } else {
+        human.classList.add('hidden');
+        travel.classList.remove('hidden');
+      }
+    });
+  });
+</script>
