@@ -1,24 +1,60 @@
+---
+import Topbar from '../../components/layout/TopBar.astro';
+import SideToolbar from '../../components/layout/SideToolbar.astro';
+import TabSwitcher from '../../components/common/TabSwitcher.astro';
+import CourseGrid from '../../components/course/CourseGrid.astro';
+import HeritageButton from '../../components/course/HeritageButtons.astro';
 
+const tabs = ['语言与文化', '风物与历史'];
 
-<!--
-  📄 页面名称：课程主页
-  📍 页面路径：/courses
-  📦 所属模块：课程系统
-  🎯 页面功能：
-    - 显示两个主要板块切换按钮（语言与文化、风图与历史）
-    - 默认展示语言与文化类课程列表
-    - 若点击“风图与历史”，展示两个跳转按钮：人文与历史、旅游与景观
+const courses = [
+  { title: '藏语入门课程', category: '语言', slug: 'intro-tibetan' },
+  { title: '西藏民俗概览', category: '文化', slug: 'tibetan-customs' },
+];
+---
 
-  🎨 组件依赖：
-    - <CourseCategorySwitcher />
-    - <CourseGrid />
-    - <HistoryRedirectPanel />
+<html lang="zh">
+  <head>
+    <title>课程 - 藏语学习</title>
+  </head>
+  <body class="flex">
+    <SideToolbar />
 
-  🧩 页面意义：
-    - 本平台课程内容的一级分发中心
-    - 支撑课程体系逻辑的视觉化呈现
+    <main class="flex-1">
+      <Topbar />
 
-  🧠 注意事项：
-    - 页面应支持响应式布局
-    - 后续可能增加筛选、搜索等功能
--->
+      <!-- 分类切换 -->
+      <div class="px-6 pt-4">
+        <TabSwitcher client:load id="main-tab-switcher" tabs={tabs} activeIndex={0} />
+      </div>
+
+      <!-- 内容区域 -->
+      <div class="px-6 pt-6">
+        <div id="course-tab-0">
+          <CourseGrid courses={courses} />
+        </div>
+        <div id="course-tab-1" style="display: none;">
+          <HeritageButton />
+        </div>
+      </div>
+
+      <!-- 客户端脚本：事件监听 -->
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const switcher = document.getElementById('main-tab-switcher');
+          const tab0 = document.getElementById('course-tab-0');
+          const tab1 = document.getElementById('course-tab-1');
+
+          switcher?.addEventListener('tabchange', (e) => {
+            const index = (e as CustomEvent<{ index: number }>).detail?.index ?? 0;
+
+            if (tab0 && tab1) {
+              tab0.style.display = index === 0 ? 'block' : 'none';
+              tab1.style.display = index === 1 ? 'block' : 'none';
+            }
+          });
+        });
+      </script>
+    </main>
+  </body>
+</html>

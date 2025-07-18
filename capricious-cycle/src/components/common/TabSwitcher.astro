@@ -1,0 +1,57 @@
+---
+interface Props {
+  tabs: string[];
+  activeIndex?: number;
+  id?: string;
+}
+const { tabs, activeIndex = 0, id }: Props = Astro.props;
+---
+
+<div {...(id ? { id } : {})} class="flex gap-4 border-b pb-2">
+  {tabs.map((tab: string, index: number) => (
+    <button
+      type="button"
+      data-index={index}
+      class={`px-4 py-1 text-sm font-medium border rounded ${
+        index === activeIndex
+          ? 'bg-blue-600 text-white'
+          : 'bg-white text-blue-600 border-blue-600'
+      }`}
+    >
+      {tab}
+    </button>
+  ))}
+</div>
+
+<script>
+  setTimeout(() => {
+    const container = document.getElementById('main-tab-switcher');
+    if (!container) return;
+
+    container.addEventListener('click', (e) => {
+      const target = e.target;
+      if (
+        target instanceof HTMLElement &&
+        target.tagName === 'BUTTON' &&
+        target.dataset.index !== undefined
+      ) {
+        const index = parseInt(target.dataset.index);
+
+        const buttons = container.querySelectorAll('button');
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('bg-white', 'text-blue-600', 'border', 'border-blue-600');
+        });
+        target.classList.remove('bg-white', 'text-blue-600', 'border', 'border-blue-600');
+        target.classList.add('bg-blue-600', 'text-white');
+
+        const event = new CustomEvent('tabchange', {
+          detail: { index },
+          bubbles: true,
+          composed: true
+        });
+        container.dispatchEvent(event); // ✅ 派发到容器
+      }
+    });
+  }, 0);
+</script>
