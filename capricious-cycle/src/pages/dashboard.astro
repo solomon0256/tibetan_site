@@ -1,47 +1,60 @@
 ---
-import UserStatusPanel from '../components/dashboard/UserStatusPanel.astro'
-import PaymentPanel from '../components/dashboard/PaymentPanel.astro'
-import SupportPanel from '../components/dashboard/SupportPanel.astro'
-import BannerPanel from '../components/dashboard/PromoBanner.astro'
+import UserStatusPanel from '../components/dashboard/UserStatusPanel.astro';
+import PaymentPanel from '../components/dashboard/PaymentPanel.astro';
+import SupportPanel from '../components/dashboard/SupportPanel.astro';
+import BannerPanel from '../components/dashboard/PromoBanner.astro';
 ---
 
+
 <!--
-  📄 页面名称：个人中心（Dashboard）
-  📍 页面路径：/dashboard
-  📦 所属模块：用户系统 / 会员系统
+  📄 页面名称：用户登录页
+  📍 页面路径：/login
+  📦 所属模块：用户系统
   🎯 页面功能：
-    - 展示用户欢迎信息和基本资料
-    - 展示当前会员状态与支付方式
-    - 提供联系客服与反馈功能入口
-    - 支撑学习记录、订阅管理等扩展内容
+    - 提供用户邮箱/密码登录入口
+    - 提交表单至 Supabase 进行身份验证
+    - 登录成功后重定向至 /dashboard
+
+  🎨 组件依赖：
+    - <LoginForm />
+
+  🧩 页面意义：
+    - 支撑整个站点的身份验证系统，保护用户专属内容
+    - 是会员体系与课程绑定的起点
 
   🧠 注意事项：
-    - 页面需确保用户已登录，否则应跳转到 /login
-    - 后续可添加学习进度与个性化推荐模块
+    - 页面需要处理 Supabase 返回的错误消息与加载状态
+    - 后续可扩展为支持第三方 OAuth 登录
 -->
 
-<main class="relative p-6 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen bg-gray-50">
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>个人中心</title>
+    <style>
+      body {
+        font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <main lang="zh-CN" class="relative p-6 grid grid-cols-1 md:grid-cols-3 gap-6 min-h-screen bg-gray-50">
+      <!-- 顶部个人中心图标 -->
+      <div class="absolute top-4 left-4">
+        🙍
+      </div>
 
-  <!-- 顶部个人中心图标 -->
-  <div class="absolute top-4 left-4">
-    <button
-      class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center shadow"
-      aria-label="个人中心"
-    >
-      🙍
-    </button>
-  </div>
+      <!-- 左侧信息栏 -->
+      <div class="md:col-span-2 space-y-4">
+        <UserStatusPanel />
+        <PaymentPanel />
+        <BannerPanel />
+      </div>
 
-  <!-- 左侧信息栏 -->
-  <div class="md:col-span-2 space-y-4">
-    <UserStatusPanel />
-    <PaymentPanel />
-    <BannerPanel />
-  </div>
-
-  <!-- 右侧支持栏 -->
-  <div class="md:col-span-1">
-    <SupportPanel />
-  </div>
-
-</main>
+      <!-- 右侧支持栏 -->
+      <div class="md:col-span-1">
+        <SupportPanel />
+      </div>
+    </main>
+  </body>
+</html>

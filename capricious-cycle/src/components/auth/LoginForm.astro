@@ -1,0 +1,16 @@
+---
+import EmailPasswordForm from './EmailPasswordForm.astro';
+import OAuthLoginButtons from './OAuthLoginButtons.astro';
+import AgreementNotice from './AgreementNotice.astro';
+import NavigationLinks from './NavigationLinks.astro';
+---
+
+<div class="w-full min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="max-w-md w-full bg-white p-8 shadow-md rounded-md space-y-6">
+    <h2 class="text-2xl font-bold text-center">欢迎登录</h2>
+
+    <EmailPasswordForm />
+    <AgreementNotice />
+    <NavigationLinks />
+  </div>
+</div>

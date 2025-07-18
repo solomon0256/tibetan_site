@@ -1,5 +1,7 @@
 
-
+---
+import LoginForm from '../components/auth/LoginForm.astro';
+---
 <!--
   📄 页面名称：用户登录页
   📍 页面路径：/login
@@ -20,3 +22,26 @@
     - 页面需要处理 Supabase 返回的错误消息与加载状态
     - 后续可扩展为支持第三方 OAuth 登录
 -->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>用户登录</title>
+  </head>
+  <body class="bg-gray-100">
+    <main class="min-h-screen flex items-center justify-center bg-cover bg-center" style="background-image: url('/auth-bg.jpg');">
+      <div class="flex w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden">
+        <!-- 左侧插图区 -->
+        <div class="hidden md:block w-1/2 bg-cover bg-center" style="background-image: url('/auth-bg.jpg');"></div>
+        
+        <!-- 右侧表单区 -->
+        <div class="w-full md:w-1/2 p-8 flex flex-col justify-center">
+          <a href="/" class="text-blue-600 hover:underline text-sm mb-4">&larr; 返回首页</a>
+          <LoginForm />
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

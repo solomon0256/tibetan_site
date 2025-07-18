@@ -1,0 +1,28 @@
+---
+import AuthLayout from '../components/auth/AuthLayout.astro';
+import EmailPasswordForm from '../components/auth/EmailPasswordForm.astro';
+import NavigationLinks from '../components/auth/NavigationLinks.astro';
+import OAuthLoginButtons from '../components/auth/OAuthLoginButtons.astro';
+import AgreementNotice from '../components/auth/AgreementNotice.astro';
+---
+
+<!--
+  📄 页面名称：注册页
+  📍 页面路径：/register
+  📦 所属模块：用户系统
+  🎯 页面功能：
+    - 提供用户注册界面
+    - 输入邮箱/密码，注册账户
+    - 占位当前功能，后续实现实际功能逻辑
+
+  💡 设计说明：
+    - 与登录页复用相同布局 AuthLayout
+    - 表单逻辑可沿用 login 页逻辑并稍作修改
+-->
+
+<AuthLayout title="创建新账户">
+  <NavigationLinks />
+  <EmailPasswordForm />
+  <OAuthLoginButtons />
+  <AgreementNotice />
+</AuthLayout>

@@ -1,0 +1,22 @@
+
+
+---
+const providers = [
+  { name: "Google", icon: "🌐", id: "google" },
+  { name: "GitHub", icon: "🐙", id: "github" }
+];
+
+const getOAuthUrl = (providerId: string) => `/api/auth/oauth/${providerId}`;
+---
+
+<div class="mt-6 flex flex-col space-y-4 w-full max-w-md mx-auto">
+  {providers.map(({ name, icon, id }) => (
+    <a
+      href={getOAuthUrl(id)}
+      class="flex items-center justify-center space-x-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded shadow-sm transition-colors duration-150"
+    >
+      <span>{icon}</span>
+      <span>使用 {name} 登录</span>
+    </a>
+  ))}
+</div>

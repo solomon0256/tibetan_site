@@ -1,0 +1,29 @@
+
+
+---
+// 通用认证页面双栏布局组件
+// File: capricious-cycle/src/components/auth/AuthLayout.astro
+// 用法示例：
+// <AuthLayout>
+//   <LoginForm />
+// </AuthLayout>
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>认证页面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body class="min-h-screen bg-white text-gray-900">
+    <main class="flex min-h-screen">
+      <!-- 左侧宣传图 -->
+      <div class="hidden md:block w-1/2 bg-cover bg-center" style="background-image: url('/auth-bg.jpg');"></div>
+
+      <!-- 右侧表单区域 -->
+      <div class="w-full md:w-1/2 flex flex-col justify-center items-center px-6 py-12">
+        <slot />
+      </div>
+    </main>
+  </body>
+</html>
