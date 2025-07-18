@@ -1,0 +1,55 @@
+---
+interface Props {
+  categories: string[]
+  activeCategory?: string
+  id?: string
+}
+
+const { categories, activeCategory, id } = Astro.props
+---
+
+<!-- 
+  CategoryTabs 组件：
+  - 接收一个类别列表（categories）和当前激活项（activeCategory）
+  - 渲染为一排可横向滚动的标签按钮
+  - 点击按钮后，向拥有 id 的外层容器派发自定义事件 "categoryselect"
+-->
+
+<div id="category-tabs" class="flex space-x-4 overflow-x-auto py-2 px-4 border-b border-gray-300">
+  {categories.map((category) => {
+    const isActive = category === activeCategory;
+    return (
+      <button
+        type="button"
+        class={`px-4 py-1 rounded-full border transition text-sm whitespace-nowrap ${
+          isActive
+            ? 'bg-blue-600 text-white border-blue-600'
+            : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-100'
+        }`}
+        data-category={category}
+      >
+        {category}
+      </button>
+    )
+  })}
+</div>
+
+<script>
+  // 挂载时为组件内部所有 button 添加点击监听
+  setTimeout(() => {
+    // 使用固定 id，避免 TS 报错
+    const id = "category-tabs";
+    const container = document.getElementById(id);
+    if (!container) return;
+
+    container.querySelectorAll('button[data-category]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category');
+        const event = new CustomEvent('categoryselect', {
+          detail: { category },
+        });
+        container.dispatchEvent(event);
+      });
+    });
+  }, 0);
+</script>

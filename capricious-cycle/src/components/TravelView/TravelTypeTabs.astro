@@ -1,0 +1,53 @@
+---
+interface Props {
+  types: string[];
+  activeType?: string;
+  id?: string;
+}
+
+const { types, activeType, id } = Astro.props;
+---
+
+<!--
+  TravelTypeTabs 组件：
+  - 用于展示多个旅游类别标签（如 人文探索、信仰朝圣 等）
+  - 支持通过点击切换当前激活类型
+  - 点击按钮时向 id 对应容器派发 'travelselect' 事件
+-->
+
+<div id="travel-type-tabs" class="flex space-x-4 overflow-x-auto py-2 px-4 border-b border-gray-300">
+  {types.map((type) => {
+    const isActive = type === activeType;
+    return (
+      <button
+        type="button"
+        class={`px-4 py-1 rounded-full border transition text-sm whitespace-nowrap ${
+          isActive
+            ? 'bg-green-600 text-white border-green-600'
+            : 'bg-white text-green-600 border-green-600 hover:bg-green-100'
+        }`}
+        data-type={type}
+      >
+        {type}
+      </button>
+    );
+  })}
+</div>
+
+<script>
+  // 监听按钮点击并派发事件
+  setTimeout(() => {
+    const container = document.getElementById("travel-type-tabs");
+    if (!container) return;
+
+    container.querySelectorAll("button[data-type]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const type = btn.getAttribute("data-type");
+        const event = new CustomEvent("travelselect", {
+          detail: { type },
+        });
+        container.dispatchEvent(event);
+      });
+    });
+  }, 0);
+</script>

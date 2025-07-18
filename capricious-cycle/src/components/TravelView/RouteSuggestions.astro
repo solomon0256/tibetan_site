@@ -1,0 +1,32 @@
+---
+interface Route {
+  title: string
+  description: string
+  icon?: string
+}
+
+interface Props {
+  routes: Route[]
+}
+
+const { routes } = Astro.props
+---
+
+<!--
+  RouteSuggestion 组件：
+  - 接收一组推荐路线，每条路线包含标题、描述和可选图标
+  - 渲染为卡片式区域
+-->
+
+<section class="space-y-4">
+  <h2 class="text-lg font-bold text-gray-700">推荐路线</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {routes.map(route => (
+      <div class="border rounded-lg p-4 shadow-sm hover:shadow transition">
+        {route.icon && <img src={route.icon} alt="" class="w-6 h-6 inline-block mr-2 align-text-bottom" />}
+        <h3 class="text-base font-semibold mb-1">{route.title}</h3>
+        <p class="text-sm text-gray-600">{route.description}</p>
+      </div>
+    ))}
+  </div>
+</section>

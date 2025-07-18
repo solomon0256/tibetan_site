@@ -1,0 +1,31 @@
+---
+interface ScenicEntry {
+  name: string;
+  description: string;
+  image?: string;
+}
+
+interface Props {
+  entries: ScenicEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+<!--
+  ScenicEntryList 组件：
+  - 接收景点词条列表（entries）
+  - 渲染为图文并排的卡片
+-->
+
+<section class="grid gap-4 md:grid-cols-2">
+  {entries.map(entry => (
+    <div class="border rounded-lg p-4 shadow hover:shadow-md transition">
+      {entry.image && (
+        <img src={entry.image} alt={entry.name} class="w-full h-40 object-cover rounded mb-2" />
+      )}
+      <h3 class="text-lg font-bold mb-1">{entry.name}</h3>
+      <p class="text-sm text-gray-700">{entry.description}</p>
+    </div>
+  ))}
+</section>
