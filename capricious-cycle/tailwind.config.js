@@ -6,7 +6,11 @@ export default {
     './components/**/*.{js,ts,jsx,tsx,astro}',
   ],
   theme: {
-    extend: {},
-  },
+  extend: {
+    fontFamily: {
+      sans: ['"Noto Sans SC"', 'Helvetica', 'Arial', 'sans-serif'],
+    }
+  }
+},
   plugins: [],
 }

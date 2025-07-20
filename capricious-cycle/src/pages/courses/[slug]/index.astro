@@ -1,0 +1,36 @@
+---
+import TopBar from '../../../components/layout/TopBar.astro';
+import { courseList } from '../content/coursesList';
+
+const { slug } = Astro.params;
+
+// 查找当前课程元信息
+const courseMeta = courseList.find(course => course.slug === slug);
+const title = courseMeta?.title ?? '未命名课程';
+const Component = courseMeta?.component ?? null;
+
+// 必须导出：静态路径生成器
+export async function getStaticPaths() {
+  return courseList.map(course => ({
+    params: { slug: course.slug },
+  }));
+}
+---
+<head>
+    <meta charset="UTF-8" />
+  <title>{title}</title>
+</head>
+<body>
+  <main class="px-6 py-4">
+    <TopBar title={title} />
+    <div class="mt-4">
+      <a href="/courses" class="text-blue-600 hover:underline">← 返回课程总览</a>
+    </div>
+
+    <div class="mt-10">
+      {Component
+        ? <Component />
+        : <div class="text-red-400">⚠️ 找不到与 slug 对应的课程组件。</div>}
+    </div>
+  </main>
+</body>

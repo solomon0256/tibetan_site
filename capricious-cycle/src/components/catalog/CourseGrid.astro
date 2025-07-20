@@ -1,6 +1,7 @@
 ---
 const { courses = [] } = Astro.props;
 ---
+
 <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
   {courses.map((course: { title: string; category: string; slug: string }) => (
     <li class="bg-white border rounded-lg p-6 shadow-sm hover:shadow-md transition">

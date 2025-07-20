@@ -2,19 +2,18 @@
 import Topbar from '../../components/layout/TopBar.astro';
 import SideToolbar from '../../components/layout/SideToolbar.astro';
 import TabSwitcher from '../../components/common/TabSwitcher.astro';
-import CourseGrid from '../../components/course/CourseGrid.astro';
-import HeritageButton from '../../components/course/HeritageButtons.astro';
+import CourseGrid from '../../components/catalog/CourseGrid.astro';
+import HeritageButton from '../../components/catalog/HeritageButtons.astro';
+import { courseList } from './content/coursesList';
 
 const tabs = ['语言与文化', '风物与历史'];
 
-const courses = [
-  { title: '藏语入门课程', category: '语言', slug: 'intro-tibetan' },
-  { title: '西藏民俗概览', category: '文化', slug: 'tibetan-customs' },
-];
+// 可按分类过滤展示，如果需要区分 tab 内容结构，可以在这里分组
+const langCultureCourses = courseList.filter(c => c.category === '语言' || c.category === '文化');
 ---
-
 <html lang="zh">
   <head>
+    <meta charset="UTF-8" />
     <title>课程 - 藏语学习</title>
   </head>
   <body class="flex">
@@ -31,7 +30,7 @@ const courses = [
       <!-- 内容区域 -->
       <div class="px-6 pt-6">
         <div id="course-tab-0">
-          <CourseGrid courses={courses} />
+          <CourseGrid courses={langCultureCourses} />
         </div>
         <div id="course-tab-1" style="display: none;">
           <HeritageButton />
@@ -47,7 +46,6 @@ const courses = [
 
           switcher?.addEventListener('tabchange', (e) => {
             const index = (e as CustomEvent<{ index: number }>).detail?.index ?? 0;
-
             if (tab0 && tab1) {
               tab0.style.display = index === 0 ? 'block' : 'none';
               tab1.style.display = index === 1 ? 'block' : 'none';
